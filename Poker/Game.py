@@ -1,43 +1,46 @@
 from Deck import Deck
+from Board import Board
 
 
 class Game:
-    def __init__(self, deck):
+    def __init__(self, deck=Deck(), board=Board()):
         self.deck = deck
+        self.board = board
 
 
 class Round(Game):
-    ...
+    def open_card(self, number=1):
+        cards_to_open = []
+        for i in range(number):
+            cards_to_open.append(self.deck.give_cards())
+        self.board.open_board_cards(cards_to_open)
 
 
 class PreFlop(Round):
     def distribution(self):
-        ...
-        # TODO: deal 2 cards to each player and 5 close cards on board
+        number_players = self.board.get_players_number()
+        cards = [[self.deck.give_cards(2)] for _ in range(number_players)]
+        self.board.deal_cards(cards)
 
 
 class Flop(Round):
     def flop(self):
-        ...
-        # TODO: open first 3 cards
+        self.open_card(3)
 
 
 class Turn(Round):
     def turn(self):
-        ...
-        # TODO: open 4-th cards
+        self.open_card(1)
 
 
 class River(Round):
     def river(self):
-        ...
-        # TODO: open 5-th card
+        self.open_card(1)
 
 
 class ShowDown(Round):
     def show_cards(self):
-        ...
-        # TODO: notify that round ended and we should distribute the winner
+        self.board.split_bank()
 
 
 class Trade(Round):

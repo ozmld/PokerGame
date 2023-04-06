@@ -1,4 +1,5 @@
 from Player import Player
+from Deck import Combination, Card
 
 
 def check_type(p):
@@ -7,9 +8,18 @@ def check_type(p):
 
 
 class Board:
+    players: dict[Player, int]
+    begin_chips: int
+    board: list[Card]
+
     def __init__(self, begin_chips=100):
         self.players = {}
         self.begin_chips = begin_chips
+        self.board = []
+
+    def open_board_cards(self, cards):
+        for card in cards:
+            self.board.append(card)
 
     # Builder pattern
     def add_player(self, p) -> None:
@@ -23,16 +33,44 @@ class Board:
         except KeyError:
             print("Player you want to remove is not in the players")
 
-    def bid(self, p, bid=0) -> None:
+    def bid(self, p: Player, bid=0) -> None:
         # Player {p} bids {bid} chips
         check_type(p)
         try:
             self.players[p] += bid
+            p.make_bid(bid)
         except KeyError:
             print("Player you want to add bid to is not in the players")
 
-    def determine_winner(self) -> Player:
-        # TODO: Check hands of all players and determine "win" hand
-        # TODO: Return extra chips to "losers" ("winner" can not take "too much" chips)
-        winner = self.players.get(0)
-        return winner
+    def get_players_number(self):
+        return len(self.players)
+
+    def deal_cards(self, cards):
+        counter = 0
+        for player in self.players.keys():
+            player.give_cards(cards[counter])
+            counter += 1
+
+    def hand_strength(self, player) -> Combination:
+        if player not in self.players.keys():
+            raise KeyError("Argument given is not a player")
+        hand = player.get_hand()
+        combination = Combination(hand + self.board).determine_strength()
+        return combination
+
+    def determine_winner(self) -> list[list[Player]]:
+        winners_temp = []
+        for player in self.players:
+            winners_temp.append((self.hand_strength(player), player))
+        winners_temp = sorted(winners_temp, key=lambda x: x[0])
+        winners = [[winners_temp[0][1]]]
+        for i in range(1, len(winners_temp)):
+            if winners_temp[i][0] == winners[-1][-1][0]:
+                winners[-1].append(winners_temp[i][1])
+            else:
+                winners.append([winners_temp[i][1]])
+        # list where [i] element is list of player with (i + 1)-th strength of hand
+        return winners
+
+    def split_bank(self):
+        winners = self.determine_winner()
