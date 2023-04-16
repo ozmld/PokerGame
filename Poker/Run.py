@@ -54,7 +54,7 @@ class Run:
                 self._visual.return_board_cards(self._game.board.board)
                 for player in self._game.board.players.keys():
                     self._visual.return_player_cards(player.name, player.hand)
-                self._visual.return_winners(self._game.board.determine_winner()[0])
+                self._visual.return_winners(self._game.board.determine_winner()[-1])
             case "trade":
                 print("Ready? y/n")
                 ans = input()

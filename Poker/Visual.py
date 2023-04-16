@@ -71,8 +71,8 @@ class ConsoleView(View):
 
     def return_winners(self, winners):
         print("Победили следующие игроки:")
-        winners = winners[0]
-        print(winners[1].name)
+        for comb, player in winners:
+            print(player.name)
 
     def return_loser(self, loser):
         print(f"Игрок {loser.name} выбывает из игры")
