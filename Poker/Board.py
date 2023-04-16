@@ -1,9 +1,9 @@
-from Player import Player
+from Player import Player, Bot
 from Deck import Combination, Card
 
 
 def check_type(p):
-    if type(p) is not Player:
+    if type(p) is not Player and type(p) is not Bot:
         raise TypeError("Argument given is not a player")
 
 
@@ -55,20 +55,21 @@ class Board:
         if player not in self.players.keys():
             raise KeyError("Argument given is not a player")
         hand = player.get_hand()
-        combination = Combination(hand + self.board).determine_strength()
+        combination = Combination(hand + self.board)
+        combination.determine_strength()
         return combination
 
-    def determine_winner(self) -> list[list[Player]]:
+    def determine_winner(self) -> list[list[tuple[Combination, Player]]]:
         winners_temp = []
         for player in self.players:
             winners_temp.append((self.hand_strength(player), player))
         winners_temp = sorted(winners_temp, key=lambda x: x[0])
-        winners = [[winners_temp[0][1]]]
+        winners = [[winners_temp[0]]]
         for i in range(1, len(winners_temp)):
             if winners_temp[i][0] == winners[-1][-1][0]:
-                winners[-1].append(winners_temp[i][1])
+                winners[-1].append(winners_temp[i])
             else:
-                winners.append([winners_temp[i][1]])
+                winners.append([winners_temp[i]])
         # list where [i] element is list of player with (i + 1)-th strength of hand
         return winners
 
