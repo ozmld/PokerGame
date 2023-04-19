@@ -11,7 +11,8 @@ class Game:
         self.round_num = 1
         self.round_flag = 1
 
-    def next_round(self):
+    def next_stage(self):
+        self.board.new_stage()
         if self.round_flag == 0:
             self.round_num += 1
             match self.round_num:
@@ -35,7 +36,7 @@ class Round:
     def open_card(self, number=1):
         cards_to_open = []
         for i in range(number):
-            cards_to_open+= self.deck.give_cards()
+            cards_to_open += self.deck.give_cards()
         self.board.open_board_cards(cards_to_open)
 
 
@@ -68,5 +69,5 @@ class ShowDown(Round):
 
 class Trade(Round):
     def notify_players(self):
-        ...
-        # TODO: notify players that trade round began
+        for player in self.board.players.keys():
+            self.board.bid(player)

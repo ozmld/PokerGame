@@ -8,51 +8,71 @@ def check_type(p):
 
 
 class Board:
-    players: dict[Player, int]
+    players: list[Player]
+    players_bids: dict[Player, int]
     begin_chips: int
     board: list[Card]
+    highest_bid: int
+    order: list[Player]
+    bank: int
 
     def __init__(self, begin_chips=100):
-        self.players = {}
+        self.players = []
+        self.players_bids = {}
         self.begin_chips = begin_chips
         self.board = []
+        self.highest_bid = 0
+        self.bank = 0
+
+    def new_stage(self):
+        self.highest_bid = 0
+
+    def new_round(self):
+        order = []
+        order.extend(self.players)
+        for player in self.players:
+            self.players_bids[player] = 0
 
     def open_board_cards(self, cards):
         for card in cards:
             self.board.append(card)
 
     # Builder pattern
-    def add_player(self, p) -> None:
+    def add_player(self, p: Player) -> None:
         check_type(p)
-        self.players[p] = 0
+        self.players_bids[p] = 0
+        self.players.append(p)
+        p.chips = self.begin_chips
 
     def remove_player(self, p) -> None:
         check_type(p)
         try:
-            self.players.pop(p)
+            self.players_bids.pop(p)
         except KeyError:
             print("Player you want to remove is not in the players")
 
-    def bid(self, p: Player, bid=0) -> None:
+    def bid(self, p: Player) -> None:
         # Player {p} bids {bid} chips
         check_type(p)
         try:
-            self.players[p] += bid
-            p.make_bid(bid)
+            bid = p.make_bid(self.highest_bid)
+            self.players_bids[p] += bid
+            self.highest_bid = max(self.highest_bid, bid)
+            self.bank += bid
         except KeyError:
-            print("Player you want to add bid to is not in the players")
+            raise KeyError("Player you want to add bid to is not in the players")
 
     def get_players_number(self):
-        return len(self.players)
+        return len(self.players_bids)
 
     def deal_cards(self, cards):
         counter = 0
-        for player in self.players.keys():
+        for player in self.players_bids.keys():
             player.give_cards(cards[counter])
             counter += 1
 
     def hand_strength(self, player) -> Combination:
-        if player not in self.players.keys():
+        if player not in self.players_bids.keys():
             raise KeyError("Argument given is not a player")
         hand = player.get_hand()
         combination = Combination(hand + self.board)
@@ -61,7 +81,8 @@ class Board:
 
     def determine_winner(self) -> list[list[tuple[Combination, Player]]]:
         winners_temp = []
-        for player in self.players:
+
+        for player in self.players_bids:
             winners_temp.append((self.hand_strength(player), player))
         winners_temp = sorted(winners_temp, key=lambda x: x[0])
         winners = [[winners_temp[0]]]
@@ -75,3 +96,4 @@ class Board:
 
     def split_bank(self):
         winners = self.determine_winner()
+        self.highest_bid = 0

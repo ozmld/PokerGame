@@ -4,6 +4,7 @@ from Player import Player, Bot
 
 #TODO distinguish players in round and players in game
 
+BOT_NAMES = ["Виталий", "Михаил", "Кирилл"]
 class Run:
     def __init__(self):
         self._visual = ConsoleView()
@@ -13,12 +14,14 @@ class Run:
         self._visual.hello()
         name = self._visual.ask_for_nickname()
         self._game.board.add_player(Player(name))
+        type = self._visual.ask_for_repr_type()
+        self._visual.represent = type
         num = self._visual.ask_for_players_num()
         while (not isinstance(num, int)) or num < 0 or num > 3:
             self._visual.raise_error("Неверный тип данных.")
             num = self._visual.ask_for_players_num()
         for i in range(num):
-            self._game.board.add_player(Bot(f"Bot{i + 1}"))
+            self._game.board.add_player(Bot(f"Бот {BOT_NAMES[i]}"))
 
     def run_subround(self):
         match self._game.round:
@@ -27,8 +30,8 @@ class Run:
                 preflopp.distribution()
                 self._game.board = preflopp.board
                 self._game.deck = preflopp.deck
-                #self._game.round.distribution()
-                for player in self._game.board.players.keys():
+                # self._game.round.distribution()
+                for player in self._game.board.players:
                     if not isinstance(player, Bot):
                         self._visual.return_player_cards(player.name, player.hand)
             case "flop":
@@ -56,25 +59,23 @@ class Run:
                     self._visual.return_player_cards(player.name, player.hand)
                 self._visual.return_winners(self._game.board.determine_winner()[-1])
             case "trade":
-                print("Ready? y/n")
-                ans = input()
-                while ans != "y":
-                    print("Ready? y/n")
-                    ans = input()
-                #self._game.round.notify_players()
-                #for player in self._game.board.players.keys():
-                #    if not isinstance(player, Bot):
-                #        self._visual.ask_for_bid()
-                #TODO send player`s bid to ??
-                #TODO process bots
+                print("Время делать ставку!")
+                # self._visual.ask_for_bid(list(self._game.board.players.keys())[1])
+                for player in self._game.board.players:
+                    if isinstance(player, Player) and not isinstance(player, Bot):
+                        player.chips_to_bid = self._visual.ask_for_bid(player, self._game.board.bank)
+                    self._game.board.bid(player)
+                self._visual.made_bids(self._game.board.players_bids)
+                # TODO send player`s bid to ??
+                # TODO process bots
 
     def next_subround(self):
-        self._game.next_round()
+        self._game.next_stage()
 
     def delete_zero_balance_players(self):
         for player in self._game.board.players.keys():
             if player.chips == 0:
-                self._visual.return_loser(player.name)
+                self._visual.kick_looser(player.name)
                 self._game.board.remove_player(player)
 
     def checker_subround_num(self):
