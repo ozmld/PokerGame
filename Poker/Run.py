@@ -5,6 +5,8 @@ from Player import Player, Bot
 #TODO distinguish players in round and players in game
 
 BOT_NAMES = ["Виталий", "Михаил", "Кирилл"]
+
+
 class Run:
     def __init__(self):
         self._visual = ConsoleView()
@@ -12,19 +14,21 @@ class Run:
 
     def start(self):
         self._visual.hello()
+
         name = self._visual.ask_for_nickname()
         self._game.board.add_player(Player(name))
-        type = self._visual.ask_for_repr_type()
-        self._visual.represent = type
-        num = self._visual.ask_for_players_num()
-        while (not isinstance(num, int)) or num < 0 or num > 3:
-            self._visual.raise_error("Неверный тип данных.")
-            num = self._visual.ask_for_players_num()
-        for i in range(num):
+
+        repr_type = self._visual.ask_for_repr_type()
+        self._visual.represent = repr_type
+        players_num = self._visual.ask_for_players_num()
+        while (not isinstance(players_num, int)) or players_num < 0 or players_num > 3:
+            self._visual.raise_error("Неверный тип данных")
+            players_num = self._visual.ask_for_players_num()
+        for i in range(players_num):
             self._game.board.add_player(Bot(f"Бот {BOT_NAMES[i]}"))
 
     def run_subround(self):
-        match self._game.round:
+        match self._game.get_round_name():
             case "preflop":
                 preflopp = PreFlop(self._game)
                 preflopp.distribution()

@@ -11,6 +11,9 @@ class Game:
         self.round_num = 1
         self.round_flag = 1
 
+    def get_round_name(self):
+        return self.round
+
     def next_stage(self):
         self.board.new_stage()
         if self.round_flag == 0:
@@ -65,8 +68,9 @@ class River(Round):
 
 
 class ShowDown(Round):
-    def show_cards(self):
-        self.board.split_bank()
+    pass
+    # def show_cards(self):
+    #     self.board.split_bank()
 
 
 class Trade(Round):
