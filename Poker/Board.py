@@ -8,7 +8,7 @@ def check_type(p):
 
 
 class Board:
-    players: list[Player]
+    players_in_game: list[Player]
     players_bids: dict[Player, int]
     begin_chips: int
     board: list[Card]
@@ -17,7 +17,7 @@ class Board:
     bank: int
 
     def __init__(self, begin_chips=100):
-        self.players = []
+        self.players_in_game = []
         self.players_bids = {}
         self.begin_chips = begin_chips
         self.board = []
@@ -29,25 +29,25 @@ class Board:
 
     def new_round(self):
         order = []
-        order.extend(self.players)
-        for player in self.players:
+        order.extend(self.players_in_game)
+        for player in self.get_players():
             self.players_bids[player] = 0
 
     def open_board_cards(self, cards):
-        for card in cards:
-            self.board.append(card)
+        self.board.extend(cards)
 
     # Builder pattern
     def add_player(self, p: Player) -> None:
         check_type(p)
         self.players_bids[p] = 0
-        self.players.append(p)
+        self.players_in_game.append(p)
         p.chips = self.begin_chips
 
     def remove_player(self, p) -> None:
         check_type(p)
         try:
             self.players_bids.pop(p)
+            self.players_in_game.remove(p)
         except KeyError:
             print("Player you want to remove is not in the players")
 
@@ -65,6 +65,9 @@ class Board:
     def get_players_number(self):
         return len(self.players_bids)
 
+    def get_players(self):
+        return self.players_bids.keys()
+
     def deal_cards(self, cards):
         counter = 0
         for player in self.players_bids.keys():
@@ -72,7 +75,7 @@ class Board:
             counter += 1
 
     def hand_strength(self, player) -> Combination:
-        if player not in self.players_bids.keys():
+        if player not in self.get_players():
             raise KeyError("Argument given is not a player")
         hand = player.get_hand()
         combination = Combination(hand + self.board)
@@ -82,7 +85,7 @@ class Board:
     def determine_winner(self) -> list[list[tuple[Combination, Player]]]:
         winners_temp = []
 
-        for player in self.players_bids:
+        for player in self.get_players():
             winners_temp.append((self.hand_strength(player), player))
         winners_temp = sorted(winners_temp, key=lambda x: x[0])
         winners = [[winners_temp[0]]]
@@ -94,6 +97,44 @@ class Board:
         # list where [i] element is list of player with (i + 1)-th strength of hand
         return winners
 
-    def split_bank(self):
-        winners = self.determine_winner()
-        self.highest_bid = 0
+    def split_bank(self, winners):
+        # The main problem is that there can be many winners so we have to sort
+        # them in increasing order according to their bids
+
+        # Folders' bids we split between all winners
+        folder_bank = 0
+        for folder in self.get_players():
+            if folder in self.players_in_game:
+                continue
+            folder_bank += self.players_bids[folder]
+            self.players_bids[folder] = 0
+        reward = folder_bank / len(winners)
+
+        for winner in winners:
+            winner.chips += reward
+
+        winners_bid = {}
+        for winner in winners:
+            winners_bid[winner] = self.players_bids[winner]
+        # Sorting winners in increasing their bids
+        winners_bid = dict(sorted(winners_bid.items(), key=lambda item: item[1]))
+
+        for cur_winner in winners_bid.keys():
+            # Each winner can earn from every player not more than his bid
+            win_bid = self.players_bids[cur_winner]
+
+            # Evaluating sub_bank and decreasing players' bids (they give some chips to the sub_bank)
+            sub_bank = 0
+            for player in self.players_bids.keys():
+                sub_bank += min(self.players_bids[player], win_bid)
+                self.players_bids[player] -= min(self.players_bids[player], win_bid)
+            reward = sub_bank / len(winners)
+
+            # Each winner gain reward
+            for winner in winners:
+                winner.chips += reward
+            # Remove current winner from list (because we handled him)
+            winners.remove(cur_winner)
+        # Return extra chips to players
+        for player, chips in self.players_bids.items():
+            player.chips += chips

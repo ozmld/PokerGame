@@ -127,7 +127,6 @@ class ConsoleView(View):
         return int(input())
 
     def made_bids(self, players):
-        print(players)
         for player in players.keys():
             print(f'{player.name} поставил {players[player]} фишек. (Остаток: {player.chips})')
 

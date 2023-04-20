@@ -34,6 +34,7 @@ class Deck:
         self.cards = [Card(j, i) for i in range(4) for j in range(2, 15)]
 
     def shuffle(self):
+        self.__init__()
         shuffle(self.cards)
 
     def __iter__(self):

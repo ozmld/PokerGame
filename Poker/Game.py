@@ -29,10 +29,12 @@ class Game:
         else:
             self.round = "trade"
         self.round_flag = (self.round_flag + 1) % 2
+
 class Round:
     def __init__(self, game=Game()):
         self.deck = game.deck
         self.board = game.board
+        
     def open_card(self, number=1):
         cards_to_open = []
         for i in range(number):
@@ -69,5 +71,5 @@ class ShowDown(Round):
 
 class Trade(Round):
     def notify_players(self):
-        for player in self.board.players.keys():
+        for player in self.board.get_players():
             self.board.bid(player)

@@ -31,7 +31,7 @@ class Run:
                 self._game.board = preflopp.board
                 self._game.deck = preflopp.deck
                 # self._game.round.distribution()
-                for player in self._game.board.players:
+                for player in self._game.board.get_players():
                     if not isinstance(player, Bot):
                         self._visual.return_player_cards(player.name, player.hand)
             case "flop":
@@ -55,13 +55,16 @@ class Run:
             case "showdown":
                 #self._game.round.show_cards()
                 self._visual.return_board_cards(self._game.board.board)
-                for player in self._game.board.players.keys():
+                for player in self._game.board.get_players():
                     self._visual.return_player_cards(player.name, player.hand)
-                self._visual.return_winners(self._game.board.determine_winner()[-1])
+                winners = self._game.board.determine_winner()[-1]
+                self._visual.return_winners(winners)
+                winners = [winner for _, winner in winners]
+                self._game.board.split_bank(winners)
             case "trade":
                 print("Время делать ставку!")
                 # self._visual.ask_for_bid(list(self._game.board.players.keys())[1])
-                for player in self._game.board.players:
+                for player in self._game.board.get_players():
                     if isinstance(player, Player) and not isinstance(player, Bot):
                         player.chips_to_bid = self._visual.ask_for_bid(player, self._game.board.bank)
                     self._game.board.bid(player)
