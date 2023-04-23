@@ -1,7 +1,4 @@
 import abc
-from Game import Game
-from colorama import init
-# init(autoreset=True)
 from colorama import Fore, Back, Style
 
 class View(metaclass=abc.ABCMeta):
