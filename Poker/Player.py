@@ -8,6 +8,9 @@ class Player:
     def change_chips(self, chips):
         self.chips += chips
 
+    def set_chips_to_bid(self, val):
+        self.chips_to_bid = val
+
     def give_cards(self, cards):
         for card in cards:
             self.hand.append(card)
@@ -23,6 +26,12 @@ class Player:
 
     def get_hand(self):
         return self.hand
+
+    def get_name(self):
+        return self.name
+
+    def get_chips(self):
+        return self.chips
 
 
 class Bot(Player):

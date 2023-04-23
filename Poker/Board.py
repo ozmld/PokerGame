@@ -28,11 +28,11 @@ class Board:
         self.highest_bid = 0
 
     def new_round(self):
-        order = []
-        order.extend(self.players_in_game)
-        for player in self.get_players():
+        for player in self.players_in_game:
             self.players_bids[player] = 0
-
+            player.hand = []
+        self.board = []
+        self.bank = 0
     def open_board_cards(self, cards):
         self.board.extend(cards)
 
