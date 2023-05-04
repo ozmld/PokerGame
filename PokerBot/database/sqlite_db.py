@@ -7,13 +7,15 @@ def sql_start():
     cur = base.cursor()
     if base:
         print("All Good!")
-    base.execute('CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, name TEXT, players_num TEXT, chips TEXT)')
+    base.execute('CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, name TEXT, players_num INTEGER, chips INTEGER)')
     base.commit()
 
 
 def sql_add_user_command(id):
-    cur.execute('INSERT INTO users VALUES (?, ?, ?, ?)', (id, "", "", ""))
-    base.commit()
+    user = cur.execute("SELECT * FROM users WHERE id == '{}' LIMIT 1".format(id)).fetchall()
+    if not user:
+        cur.execute('INSERT INTO users VALUES (?, ?, ?, ?)', (id, "", "", ""))
+        base.commit()
 
 
 def sql_update_user_command(id, name="", players_num="", chips=""):

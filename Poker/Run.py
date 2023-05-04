@@ -1,10 +1,10 @@
-from Game import *
-from Visual import ConsoleView
-from Player import Player, Bot
+from Poker.Game import *
+from Poker.Visual import ConsoleView
+from Poker.Player import Player, Bot
 
 #TODO distinguish players in round and players in game
 
-BOT_NAMES = ["Виталий", "Михаил", "Кирилл"]
+BOT_NAMES = ["Виталий", "Михаил", "Кирилл", "Алексей", "Максим", "Никита"]
 
 
 class Run:

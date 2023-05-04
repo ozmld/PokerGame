@@ -1,5 +1,5 @@
-from Player import Player, Bot
-from Deck import Combination, Card
+from Poker.Player import Player, Bot
+from Poker.Deck import Combination, Card
 
 
 def check_type(p):

@@ -1,5 +1,5 @@
-from Deck import Deck
-from Board import Board
+from Poker.Deck import Deck
+from Poker.Board import Board
 
 
 class Game:

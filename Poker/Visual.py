@@ -77,6 +77,8 @@ class View(metaclass=abc.ABCMeta):
     def return_end_lose(self):
         """Notifies that player lost because he has no more chips"""
         pass
+
+
 class ConsoleView(View):
 
     string_card_suit = {0: " of clubs", 1: " of hearts", 2: " of diamonds", 3: " of spades"}
@@ -104,7 +106,7 @@ class ConsoleView(View):
     def repr_cards(self, cards):
         return [self.repr_card(card, self.represent) for card in cards]
 
-    def output(self, cards):
+    def output_cards(self, cards):
         print(*self.repr_cards(cards), sep=', ')
 
     def hello(self):
@@ -139,12 +141,12 @@ class ConsoleView(View):
 
     def return_player_cards(self, name, cards):
         print(f"карты {name}:")
-        self.output(cards)
+        self.output_cards(cards)
         print()
 
     def return_board_cards(self, cards):
         print("Карты на столе:")
-        self.output(cards)
+        self.output_cards(cards)
         print()
 
     def ask_for_bid(self, player, bank):
