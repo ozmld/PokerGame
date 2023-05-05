@@ -147,24 +147,25 @@ async def showdown(message: types.Message, state: FSMContext):
     winners = [winner for _, winner in winners]
     game.split_bank(winners)
     game.next_round()
-    def human_is_in_game(game):
+    def human_is_in_game():
         for player in game.get_players():
             if type(player) is not Bot and type(player) is Player:
                 return True
         return False
-    async def delete_zero_balance_players(game):
-        players = list(game.get_players())
-        for player in players:
-            if player.get_chips() == 0:
-                await bot.send_message(message.chat.id, get_player_zero_chips_message(player.name))
-                game.remove_player(player)
-    if not human_is_in_game(game):
-        await bot.send_message(message.chat.id, get_you_loose_message())
+    players = list(game.get_players())
+    for player in players:
+        if player.get_chips() == 0:
+            await bot.send_message(message.chat.id, get_player_zero_chips_message(player.name))
+            game.remove_player(player)
+    if not human_is_in_game():
+        await bot.send_message(message.chat.id, get_you_loose_message(), reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(None)
         return
+    print(game.get_players())
     if len(game.get_players()) == 1:
-        await bot.send_message(message.chat.id, get_you_win_message())
+        await bot.send_message(message.chat.id, get_you_win_message(), reply_markup=types.ReplyKeyboardRemove())
+        await state.set_state(None)
         return
-    await delete_zero_balance_players(game)
     await state.update_data(game=game)
     await state.set_state(FSMGame.preflop.state)
 
