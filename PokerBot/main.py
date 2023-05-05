@@ -1,7 +1,13 @@
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from create_bot import dp
 from aiogram.utils import executor
 from handlers import general
-from PokerBot.database import sqlite_db
+from database import sqlite_db
 
 
 async def on_startup(_):

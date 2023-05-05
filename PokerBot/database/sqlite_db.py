@@ -27,5 +27,5 @@ def sql_update_user_command(id, name="", players_num="", chips=""):
         cur.execute("UPDATE users SET chips = \"{}\" WHERE id == \"{}\";".format(chips, id))
     base.commit()
 
-def sql_get_user_data_comman(id):
+def sql_get_user_data_command(id):
     return cur.execute("SELECT * FROM users WHERE id == '{}' LIMIT 1".format(id)).fetchall()

@@ -93,7 +93,7 @@ def get_init_game_ended_message():
 
 def get_game_not_inited_message():
     return "Чтобы начать, нужно сначала определиться с игровыми параметрами:" \
-           "\n->/init_game"
+           "\n-> /init_game"
 
 
 def get_game_start_message():

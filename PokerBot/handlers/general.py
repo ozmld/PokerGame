@@ -2,13 +2,13 @@ import asyncio
 
 from aiogram import types, Dispatcher
 
-from PokerBot.create_bot import bot
+from create_bot import bot
 
-from PokerBot.database import sqlite_db
+from database import sqlite_db
 
-from PokerBot.handlers.message_representings import *
-from PokerBot.handlers.init_game import register_init_game_handlers, FSMGameInit
-from PokerBot.handlers.game import register_game_handlers
+from handlers.message_representings import *
+from handlers.init_game import register_init_game_handlers, FSMGameInit
+from handlers.game import register_game_handlers
 
 
 async def start_command(message: types.Message):

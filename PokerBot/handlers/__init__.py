@@ -1,1 +1,1 @@
-from PokerBot.handlers.message_representings import *
+from handlers.message_representings import *

@@ -2,12 +2,12 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
-from PokerBot.create_bot import bot
+from create_bot import bot
 
-from PokerBot.handlers.message_representings import *
-from PokerBot.keyboard import *
+from handlers.message_representings import *
+from keyboard import *
 
-from PokerBot.database import sqlite_db
+from database import sqlite_db
 
 from Poker.Game import Game, PreFlop, Flop, Turn, River
 from Poker.Player import Player, Bot
@@ -24,19 +24,25 @@ class FSMGame(StatesGroup):
 
 
 async def start_game(message: types.Message, state: FSMContext):
-    user_data = sqlite_db.sql_get_user_data_comman(message.from_user.id)[0]
+    user_data = sqlite_db.sql_get_user_data_command(message.from_user.id)
+    try:
+        user_data = user_data[0]
+    except IndexError:
+        await bot.send_message(message.chat.id, get_game_not_inited_message())
+        return
     name = user_data[1]
     players_num = int(user_data[2])
     if name == "" or players_num == "":
         await bot.send_message(message.chat.id, get_game_not_inited_message())
-    else:
-        game = Game()
-        game.add_player(Player(name))
-        for i in range(players_num):
-            game.add_player(Bot(f"Бот {BOT_NAMES[i].capitalize()}"))
-        await state.update_data(game=game)
-        await state.set_state(FSMGame.preflop.state)
-        await bot.send_message(message.chat.id, get_game_start_message(), reply_markup=get_start_game_keyboard())
+        return
+
+    game = Game()
+    game.add_player(Player(name))
+    for i in range(players_num):
+        game.add_player(Bot(f"Бот {BOT_NAMES[i].capitalize()}"))
+    await state.update_data(game=game)
+    await state.set_state(FSMGame.preflop.state)
+    await bot.send_message(message.chat.id, get_game_start_message(), reply_markup=get_start_game_keyboard())
 
 
 async def preflop(message: types.Message, state: FSMContext):
