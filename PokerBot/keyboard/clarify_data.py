@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMar
 
 
 def get_name_clarify_keyboard():
-    keyboard = ReplyKeyboardMarkup()
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     yes_button = KeyboardButton(text="Да")
     no_button = KeyboardButton(text="Нет")
     keyboard.add(yes_button, no_button)

@@ -21,13 +21,11 @@ def sql_add_user_command(id):
 def sql_update_user_command(id, name="", players_num="", chips=""):
     if name != "":
         cur.execute("UPDATE users SET name = \"{}\" WHERE id == \"{}\";".format(name, id))
-        base.commit()
     if players_num != "":
         cur.execute("UPDATE users SET players_num = \"{}\" WHERE id == \"{}\";".format(players_num, id))
-        base.commit()
     if chips != "":
         cur.execute("UPDATE users SET chips = \"{}\" WHERE id == \"{}\";".format(chips, id))
-        base.commit()
+    base.commit()
 
 def sql_get_user_data_comman(id):
-    return cur.execute("SELECT * FROM users WHERE id == '{}' LIMIT 1".format(id)).fetchall()[0]
+    return cur.execute("SELECT * FROM users WHERE id == '{}' LIMIT 1".format(id)).fetchall()

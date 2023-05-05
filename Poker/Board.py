@@ -108,7 +108,7 @@ class Board:
                 continue
             folder_bank += self.players_bids[folder]
             self.players_bids[folder] = 0
-        reward = folder_bank / len(winners)
+        reward = folder_bank // len(winners)
 
         for winner in winners:
             winner.chips += reward
@@ -128,7 +128,7 @@ class Board:
             for player in self.players_bids.keys():
                 sub_bank += min(self.players_bids[player], win_bid)
                 self.players_bids[player] -= min(self.players_bids[player], win_bid)
-            reward = sub_bank / len(winners)
+            reward = sub_bank // len(winners)
 
             # Each winner gain reward
             for winner in winners:

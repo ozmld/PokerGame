@@ -3,10 +3,16 @@ from Poker.Board import Board
 
 
 class Game:
-    def __init__(self, deck=Deck(), board=Board()):
-        self.deck = deck
+    def __init__(self, deck=None, board=None):
+        if deck is None:
+            self.deck = Deck()
+        else:
+            self.deck = deck
+        if board is None:
+            self.board = Board()
+        else:
+            self.board = board
         self.deck.shuffle()
-        self.board = board
         self.round = "preflop"
         self.round_num = 0
         self.round_flag = 1
