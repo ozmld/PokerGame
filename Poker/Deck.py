@@ -1,20 +1,15 @@
 from random import shuffle
 from itertools import combinations
-card_suit = {0: "Clubs", 1: "Hearts", 2: "Diamonds", 3: "Spades"}
-card_value = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight",
-              9: "Nine", 10: "Ten", 11: "Jack", 12: "Queen", 13: "King", 14: "Ace"}
 
 
 class Card:
+    _repr = "string"
     def __init__(self, value, suit):
         self.value = value
         self.suit = suit
 
     def __lt__(self, other):
         return self.value < other.value
-
-    def __repr__(self):
-        return card_value[self.value] + " of " + card_suit[self.suit]
 
 
 class DeckIter:
@@ -39,6 +34,7 @@ class Deck:
         self.cards = [Card(j, i) for i in range(4) for j in range(2, 15)]
 
     def shuffle(self):
+        self.__init__()
         shuffle(self.cards)
 
     def __iter__(self):
